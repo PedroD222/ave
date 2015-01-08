@@ -25,6 +25,19 @@ namespace DynamicProxy
             FieldBuilder fReal = tb.DefineField("real", oBase.GetType(), FieldAttributes.Private);
             FieldBuilder fHandler = tb.DefineField("handler", typeof(IInvocationHandler), FieldAttributes.Private);
 
+            Type[] constructorParameters = {oBase.GetType(), typeof(IInvocationHandler)};
+            ConstructorBuilder cb = tb.DefineConstructor(MethodAttributes.Public, CallingConventions.Standard, constructorParameters);
+
+            ILGenerator cbIL = cb.GetILGenerator();
+            cbIL.Emit(OpCodes.Ldarg_0);
+            cbIL.Emit(OpCodes.Call, typeof(object).GetConstructor(Type.EmptyTypes));
+            cbIL.Emit(OpCodes.Ldarg_0);
+            cbIL.Emit(OpCodes.Ldarg_1);
+            cbIL.Emit(OpCodes.Stfld, fReal);
+            cbIL.Emit(OpCodes.Ldarg_2);
+            cbIL.Emit(OpCodes.Stfld, fHandler);
+            cbIL.Emit(OpCodes.Ret);
+
             foreach (MethodInfo mInfo in oBase.GetType().GetRuntimeMethods())
             {
                 //generate method
