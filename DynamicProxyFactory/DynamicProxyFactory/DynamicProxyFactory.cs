@@ -15,7 +15,7 @@ namespace DynamicProxy
 
     class DynamicProxyFactory
     {
-        static T MakeProxy<T>(Object oBase, IInvocationHandler handler)  {
+        public static T MakeProxy<T>(Object oBase, IInvocationHandler handler)  {
             AssemblyBuilder ab = AppDomain.CurrentDomain.DefineDynamicAssembly(null, AssemblyBuilderAccess.RunAndCollect); //Pode dar problemas
             
             ModuleBuilder mb = ab.DefineDynamicModule(null);
