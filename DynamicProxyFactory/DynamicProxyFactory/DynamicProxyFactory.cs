@@ -8,27 +8,6 @@ using System.Threading.Tasks;
 
 namespace DynamicProxy
 {
-    public class CallInfo {
-        private MethodInfo _targetMethod;
-        private object _target;
-        private object[] _parameters;
-
-        public CallInfo(MethodInfo tm, object t, object[] pm){
-            _targetMethod = tm;
-            _target = t;
-            _parameters = pm;
-        }
-        public MethodInfo TargetMethod {
-            get{ return _targetMethod; }
-        }
-
-        public object Target{
-            get{ return _target; }
-        }
-        public object[]Parameters{
-            get{ return _parameters; }
-        }
-    }
 
     public interface IInvocationHandler{
         object OnCall(CallInfo info);
