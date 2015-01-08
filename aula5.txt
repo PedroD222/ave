@@ -1,0 +1,12 @@
+C# new Ponto(5,7)
+
+ldc.i4.5
+ldc.i4.7
+newobj Ponto::.ctor(int32, int32) << 1. alloc heap; 2. iniciar a zeros; 3. chama o construtor; 4. retorna a referencia para o objecto instanciado (fica no topo da stack)
+
+Java new Ponto(5,7)
+new 		#11
+dup
+iconst_5
+bipush 		7
+invokespecial 	#12
