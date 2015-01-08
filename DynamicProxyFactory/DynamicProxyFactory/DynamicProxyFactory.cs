@@ -8,27 +8,6 @@ using System.Threading.Tasks;
 
 namespace DynamicProxy
 {
-    public class CallInfo {
-        private MethodInfo _targetMethod;
-        private object _target;
-        private object[] _parameters;
-
-        public CallInfo(MethodInfo tm, object t, object[] pm){
-            _targetMethod = tm;
-            _target = t;
-            _parameters = pm;
-        }
-        public MethodInfo TargetMethod {
-            get{ return _targetMethod; }
-        }
-
-        public object Target{
-            get{ return _target; }
-        }
-        public object[]Parameters{
-            get{ return _parameters; }
-        }
-    }
 
     public interface IInvocationHandler{
         object OnCall(CallInfo info);
@@ -38,13 +17,26 @@ namespace DynamicProxy
     {
         public static T MakeProxy<T>(Object oBase, IInvocationHandler handler)  {
             AssemblyBuilder ab = AppDomain.CurrentDomain.DefineDynamicAssembly(null, AssemblyBuilderAccess.RunAndCollect); //Pode dar problemas
+            
             ModuleBuilder mb = ab.DefineDynamicModule(null);
+            
             TypeBuilder tb = mb.DefineType(null, TypeAttributes.Public, oBase.GetType());
 
-            foreach (ConstructorInfo cInfo in oBase.GetType().GetConstructors())
-            {
-                
-            }
+            FieldBuilder fReal = tb.DefineField("real", oBase.GetType(), FieldAttributes.Private);
+            FieldBuilder fHandler = tb.DefineField("handler", typeof(IInvocationHandler), FieldAttributes.Private);
+
+            Type[] constructorParameters = {oBase.GetType(), typeof(IInvocationHandler)};
+            ConstructorBuilder cb = tb.DefineConstructor(MethodAttributes.Public, CallingConventions.Standard, constructorParameters);
+
+            ILGenerator cbIL = cb.GetILGenerator();
+            cbIL.Emit(OpCodes.Ldarg_0);
+            cbIL.Emit(OpCodes.Call, typeof(object).GetConstructor(Type.EmptyTypes));
+            cbIL.Emit(OpCodes.Ldarg_0);
+            cbIL.Emit(OpCodes.Ldarg_1);
+            cbIL.Emit(OpCodes.Stfld, fReal);
+            cbIL.Emit(OpCodes.Ldarg_2);
+            cbIL.Emit(OpCodes.Stfld, fHandler);
+            cbIL.Emit(OpCodes.Ret);
 
             foreach (MethodInfo mInfo in oBase.GetType().GetRuntimeMethods())
             {
