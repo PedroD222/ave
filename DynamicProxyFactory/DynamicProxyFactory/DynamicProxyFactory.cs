@@ -37,7 +37,7 @@ namespace DynamicProxy
             cbIL.Emit(OpCodes.Ldarg_2);
             cbIL.Emit(OpCodes.Stfld, fHandler);
             cbIL.Emit(OpCodes.Ret);
-            OpCodes.l
+            
             foreach (MethodInfo mInfo in oBase.GetType().GetRuntimeMethods())
             {
                 //generate method
