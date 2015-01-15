@@ -37,12 +37,29 @@ namespace DynamicProxy
             cbIL.Emit(OpCodes.Ldarg_2);
             cbIL.Emit(OpCodes.Stfld, fHandler);
             cbIL.Emit(OpCodes.Ret);
-            OpCodes.l
             foreach (MethodInfo mInfo in oBase.GetType().GetRuntimeMethods())
             {
                 //generate method
+                ParameterInfo[] mparams = mInfo.GetParameters();
+                Type[] types = new Type[mparams.Length];
+                for(int i = 0; i < mparams.Length; ++i){
+                    types[i] = mparams[i].ParameterType;
+                }                
+                MethodBuilder mtdb = tb.DefineMethod(mInfo.Name, mInfo.Attributes, mInfo.CallingConvention, mInfo.ReturnType, types);
+                
                 //build CallInfo
+
+                ILGenerator mtdbIL = mtdb.GetILGenerator();
+                Type[] callInfoParamTypes = {typeof(MethodInfo), typeof(object), typeof(object[])};
+                mtdbIL.Emit(OpCodes.Mkrefany, mInfo);
+                mtdbIL.Emit(OpCodes.Ldarg_0);
+
+
+                mtdbIL.Emit(OpCodes.Call, typeof(CallInfo).GetConstructor(callInfoParamTypes));
+                
                 //call handler.OnCall(CallInfo)
+                //define override
+                tb.DefineMethodOverride(mtdb, mInfo);
             }
             return default(T);
         }
