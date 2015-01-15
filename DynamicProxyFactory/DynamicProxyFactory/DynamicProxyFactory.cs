@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace DynamicProxy
 {
+    
 
     public interface IInvocationHandler{
         object OnCall(CallInfo info);
@@ -15,7 +16,8 @@ namespace DynamicProxy
 
     class DynamicProxyFactory
     {
-        public static T MakeProxy<T>(Object oBase, IInvocationHandler handler)  {
+
+        public static T MakeProxy<T>(T oBase, IInvocationHandler handler)  {
             AssemblyBuilder ab = AppDomain.CurrentDomain.DefineDynamicAssembly(null, AssemblyBuilderAccess.RunAndCollect); //Pode dar problemas
             
             ModuleBuilder mb = ab.DefineDynamicModule(null);
@@ -37,31 +39,42 @@ namespace DynamicProxy
             cbIL.Emit(OpCodes.Ldarg_2);
             cbIL.Emit(OpCodes.Stfld, fHandler);
             cbIL.Emit(OpCodes.Ret);
+
             foreach (MethodInfo mInfo in oBase.GetType().GetRuntimeMethods())
             {
                 //generate method
                 ParameterInfo[] mparams = mInfo.GetParameters();
-                Type[] types = new Type[mparams.Length];
+                Type[] ParametersTypes = new Type[mparams.Length];
                 for(int i = 0; i < mparams.Length; ++i){
-                    types[i] = mparams[i].ParameterType;
+                    ParametersTypes[i] = mparams[i].ParameterType;
                 }                
-                MethodBuilder mtdb = tb.DefineMethod(mInfo.Name, mInfo.Attributes, mInfo.CallingConvention, mInfo.ReturnType, types);
-                
+                MethodBuilder methodBuilder = tb.DefineMethod(mInfo.Name, mInfo.Attributes, mInfo.CallingConvention, mInfo.ReturnType, ParametersTypes);
+           
                 //build CallInfo
 
-                ILGenerator mtdbIL = mtdb.GetILGenerator();
-                Type[] callInfoParamTypes = {typeof(MethodInfo), typeof(object), typeof(object[])};
-                mtdbIL.Emit(OpCodes.Mkrefany, mInfo);
-                mtdbIL.Emit(OpCodes.Ldarg_0);
-
-
-                mtdbIL.Emit(OpCodes.Call, typeof(CallInfo).GetConstructor(callInfoParamTypes));
+                ILGenerator methodBuilderIL = methodBuilder.GetILGenerator();
+                methodBuilderIL.Emit(OpCodes.Mkrefany, mInfo);
+                methodBuilderIL.Emit(OpCodes.Ldarg_0);
+                
+                methodBuilderIL.Emit(OpCodes.Ldc_I4, mparams.Length);
+                methodBuilderIL.Emit(OpCodes.Newarr, typeof(object));
+                for (int i = 0; i < mparams.Length; ++i)
+                {
+                    methodBuilderIL.Emit(OpCodes.Ldc_I4, i);
+                    methodBuilderIL.Emit(OpCodes.Ldarg, i);
+                    methodBuilderIL.Emit(OpCodes.Stelem_Ref);
+                }
+                methodBuilderIL.Emit(OpCodes.Ldloc_0);
+                
+                Type[] callInfoParamTypes = { typeof(MethodInfo), typeof(object), typeof(object[]) };
+                methodBuilderIL.Emit(OpCodes.Call, typeof(CallInfo).GetConstructor(callInfoParamTypes));
                 
                 //call handler.OnCall(CallInfo)
                 //define override
-                tb.DefineMethodOverride(mtdb, mInfo);
+                tb.DefineMethodOverride(methodBuilder, mInfo);
             }
-            return default(T);
+
+            return (T)Convert.ChangeType(tb.CreateType(), typeof(T));
         }
     }
 }
