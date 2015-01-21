@@ -51,9 +51,11 @@ namespace DynamicProxy
 
                 ILGenerator mtdbIL = mtdb.GetILGenerator();
                 Type[] callInfoParamTypes = {typeof(MethodInfo), typeof(object), typeof(object[])};
+                LocalBuilder a = mtdbIL.DeclareLocal(typeof(object));
+               
                 mtdbIL.Emit(OpCodes.Mkrefany, mInfo);
                 mtdbIL.Emit(OpCodes.Ldarg_0);
-
+                
 
                 mtdbIL.Emit(OpCodes.Call, typeof(CallInfo).GetConstructor(callInfoParamTypes));
                 
