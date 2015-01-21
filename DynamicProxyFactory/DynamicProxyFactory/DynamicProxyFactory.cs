@@ -19,7 +19,7 @@ namespace DynamicProxy
 
         public static object MakeProxy<T>(T oBase, IInvocationHandler handler)  {
             AssemblyName asn = new AssemblyName("ProxyBuilderAssembly");
-            AssemblyBuilder ab = AppDomain.CurrentDomain.DefineDynamicAssembly(asn, AssemblyBuilderAccess.RunAndCollect); //Pode dar problemas
+            AssemblyBuilder ab = AppDomain.CurrentDomain.DefineDynamicAssembly(asn, AssemblyBuilderAccess.RunAndSave); //Pode dar problemas
             
             ModuleBuilder mb = ab.DefineDynamicModule("ProxyBuilderModule");
             
@@ -62,32 +62,33 @@ namespace DynamicProxy
 
                 ILGenerator methodBuilderIL = methodBuilder.GetILGenerator();
                 methodBuilderIL.Emit(OpCodes.Ldarg_0);
-
                 methodBuilderIL.Emit(OpCodes.Ldfld, fReal);
                 methodBuilderIL.Emit(OpCodes.Call, getType);
                 methodBuilderIL.Emit(OpCodes.Ldstr, mInfo.Name);
                 methodBuilderIL.Emit(OpCodes.Call, getMethod);
-
+         //       methodBuilderIL.Emit(OpCodes.Mkrefany, mInfo.GetType());
                 
                 methodBuilderIL.Emit(OpCodes.Ldarg_0);
                 methodBuilderIL.Emit(OpCodes.Ldfld, fReal);
 
                 methodBuilderIL.Emit(OpCodes.Ldc_I4, mparams.Length);
                 methodBuilderIL.Emit(OpCodes.Newarr, typeof(object));
+                methodBuilderIL.Emit(OpCodes.Dup);
                 for (int i = 0; i < mparams.Length; ++i)
                 {
+                    methodBuilderIL.Emit(OpCodes.Dup);
                     methodBuilderIL.Emit(OpCodes.Ldc_I4, i);
                     methodBuilderIL.Emit(OpCodes.Ldarg, i);
                     methodBuilderIL.Emit(OpCodes.Stelem_Ref);
                 }
-                methodBuilderIL.Emit(OpCodes.Ldloc_0);
                 
                 Type[] callInfoParamTypes = { typeof(MethodInfo), typeof(object), typeof(object[]) };
                 methodBuilderIL.Emit(OpCodes.Call, typeof(CallInfo).GetConstructor(callInfoParamTypes));
 
+                //call handler.OnCall(CallInfo)
                 methodBuilderIL.Emit(OpCodes.Call, handler.GetType().GetMethod("OnCall"));
                 methodBuilderIL.Emit(OpCodes.Ret);
-                //call handler.OnCall(CallInfo)
+                
                 //define override
                 tb.DefineMethodOverride(methodBuilder, mInfo);
                 
