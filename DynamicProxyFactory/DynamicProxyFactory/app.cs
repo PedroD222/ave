@@ -27,8 +27,8 @@ namespace DynamicProxy
         {
             IInvocationHandler logInterceptor =new LoggerInterceptor();
             Foo real = new Foo();
-            Foo proxy = DynamicProxyFactory.MakeProxy<Foo>(real, logInterceptor);
-            proxy.DoIt("12");
+            Foo proxy = (Foo) DynamicProxyFactory.MakeProxy<Foo>(real, logInterceptor);
+                proxy.DoIt("12");
         
             /*IInvocationHandler mockInterceptor =new MockInterceptor();
         IHelper p =DynamicProxyFactory.MakeProxy<IHelper>(mockInterceptor);
