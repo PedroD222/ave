@@ -62,10 +62,12 @@ namespace DynamicProxy
 
                 ILGenerator methodBuilderIL = methodBuilder.GetILGenerator();
                 methodBuilderIL.Emit(OpCodes.Ldarg_0);
+
                 methodBuilderIL.Emit(OpCodes.Ldfld, fReal);
                 methodBuilderIL.Emit(OpCodes.Call, getType);
                 methodBuilderIL.Emit(OpCodes.Ldstr, mInfo.Name);
                 methodBuilderIL.Emit(OpCodes.Call, getMethod);
+
                 
                 methodBuilderIL.Emit(OpCodes.Ldarg_0);
                 methodBuilderIL.Emit(OpCodes.Ldfld, fReal);
