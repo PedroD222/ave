@@ -17,7 +17,7 @@ namespace DynamicProxy
     class DynamicProxyFactory
     {
 
-        public static object MakeProxy<T>(T oBase, IInvocationHandler handler)  {
+        public static object MakeProxy<T>(T oBase, IInvocationHandler handler) where T : class {
             AssemblyName asn = new AssemblyName("ProxyBuilderAssembly");
             AssemblyBuilder ab = AppDomain.CurrentDomain.DefineDynamicAssembly(asn, AssemblyBuilderAccess.RunAndSave); //Pode dar problemas
             
@@ -59,8 +59,14 @@ namespace DynamicProxy
                 MethodBuilder methodBuilder = tb.DefineMethod(mInfo.Name, mInfo.Attributes, mInfo.CallingConvention, mInfo.ReturnType, ParametersTypes);
                 
                 //build CallInfo
-
+               
                 ILGenerator methodBuilderIL = methodBuilder.GetILGenerator();
+               
+                //create local 2
+                LocalBuilder l0 = methodBuilderIL.DeclareLocal(typeof(CallInfo));
+                LocalBuilder l1 = methodBuilderIL.DeclareLocal(typeof(int));
+                LocalBuilder l2 = methodBuilderIL.DeclareLocal(typeof(object []));
+                
                 methodBuilderIL.Emit(OpCodes.Ldarg_0);
                 methodBuilderIL.Emit(OpCodes.Ldfld, fReal);
                 methodBuilderIL.Emit(OpCodes.Call, getType);
@@ -70,23 +76,41 @@ namespace DynamicProxy
                 
                 methodBuilderIL.Emit(OpCodes.Ldarg_0);
                 methodBuilderIL.Emit(OpCodes.Ldfld, fReal);
-
+                
                 methodBuilderIL.Emit(OpCodes.Ldc_I4, mparams.Length);
                 methodBuilderIL.Emit(OpCodes.Newarr, typeof(object));
-                methodBuilderIL.Emit(OpCodes.Dup);
+                methodBuilderIL.Emit(OpCodes.Stloc_2);
+                methodBuilderIL.Emit(OpCodes.Ldloc_2);
+                //methodBuilderIL.Emit(OpCodes.Dup);
                 for (int i = 0; i < mparams.Length; ++i)
                 {
-                    methodBuilderIL.Emit(OpCodes.Dup);
+                  //  methodBuilderIL.Emit(OpCodes.Dup);
                     methodBuilderIL.Emit(OpCodes.Ldc_I4, i);
-                    methodBuilderIL.Emit(OpCodes.Ldarg, i);
+                    methodBuilderIL.Emit(OpCodes.Ldarg, i+1);
                     methodBuilderIL.Emit(OpCodes.Stelem_Ref);
                 }
-                
+                methodBuilderIL.Emit(OpCodes.Ldloc_2);
+                //debug
+               // methodBuilderIL.Emit(OpCodes.Ldnull);
+                //methodBuilderIL.Emit(OpCodes.Ldnull);
+               // methodBuilderIL.Emit(OpCodes.Ldnull);
                 Type[] callInfoParamTypes = { typeof(MethodInfo), typeof(object), typeof(object[]) };
-                methodBuilderIL.Emit(OpCodes.Call, typeof(CallInfo).GetConstructor(callInfoParamTypes));
+                methodBuilderIL.Emit(OpCodes.Newobj, typeof(CallInfo).GetConstructor(callInfoParamTypes));
+                methodBuilderIL.Emit(OpCodes.Stloc_0);
 
-                //call handler.OnCall(CallInfo)
-                methodBuilderIL.Emit(OpCodes.Call, handler.GetType().GetMethod("OnCall"));
+                //handler Proxy
+                methodBuilderIL.Emit(OpCodes.Ldarg_0);
+                methodBuilderIL.Emit(OpCodes.Ldfld, fHandler);
+                //carregare callinfo
+                methodBuilderIL.Emit(OpCodes.Ldloc_0);
+                //call handler.OnCall(CallInfo)                
+                //MethodInfo m= handler.GetType().GetMethod("OnCall");
+                methodBuilderIL.Emit(OpCodes.Callvirt, handler.GetType().GetMethod("OnCall"));
+                
+                //methodBuilderIL.Emit(OpCodes.Unbox_Any, typeof(int));*/
+                
+                methodBuilderIL.Emit(OpCodes.Pop);
+                methodBuilderIL.Emit(OpCodes.Ldc_I4_8);
                 methodBuilderIL.Emit(OpCodes.Ret);
                 
                 //define override
@@ -100,7 +124,7 @@ namespace DynamicProxy
             ConstructorInfo typeConstructor = finishedType.GetConstructor(constructorParameters);
             Object[] constructorArguments = {oBase, handler};
             object o = typeConstructor.Invoke(constructorArguments);
-            return o;
+            return o as T;
         }
     }
 }

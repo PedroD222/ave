@@ -29,7 +29,7 @@ namespace DynamicProxy
             Foo real = new Foo();
             Foo proxy = (Foo) DynamicProxyFactory.MakeProxy<Foo>(real, logInterceptor);
                 proxy.DoIt("12");
-        
+             
             /*IInvocationHandler mockInterceptor =new MockInterceptor();
         IHelper p =DynamicProxyFactory.MakeProxy<IHelper>(mockInterceptor);
         string s = p.Operation(new Dictionary<int, string>());*/
