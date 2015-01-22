@@ -1,0 +1,39 @@
+.method public hidebysig virtual instance int32 
+        DoIt(string s) cil managed
+{
+  // Code size       68 (0x44)
+  .maxstack  5
+  .locals init ([0] class TestingShits.WindowsFormsApplication.CallInfo ci,
+           [1] int32 CS$1$0000,
+           [2] object[] CS$0$0001)
+  IL_0000:  nop
+  IL_0001:  ldarg.0
+  IL_0002:  ldfld      class TestingShits.WindowsFormsApplication.Foo TestingShits.WindowsFormsApplication.Proxy::real
+  IL_0007:  callvirt   instance class [mscorlib]System.Type [mscorlib]System.Object::GetType()
+  IL_000c:  ldstr      "DoIt"
+  IL_0011:  callvirt   instance class [mscorlib]System.Reflection.MethodInfo [mscorlib]System.Type::GetMethod(string)
+  IL_0016:  ldarg.0
+  IL_0017:  ldfld      class TestingShits.WindowsFormsApplication.Foo TestingShits.WindowsFormsApplication.Proxy::real
+  IL_001c:  ldc.i4.1
+  IL_001d:  newarr     [mscorlib]System.Object
+  IL_0022:  stloc.2
+  IL_0023:  ldloc.2
+  IL_0024:  ldc.i4.0
+  IL_0025:  ldarg.1
+  IL_0026:  stelem.ref
+  IL_0027:  ldloc.2
+  IL_0028:  newobj     instance void TestingShits.WindowsFormsApplication.CallInfo::.ctor(class [mscorlib]System.Reflection.MethodInfo,
+                                                                                          object,
+                                                                                          object[])
+  IL_002d:  stloc.0
+  IL_002e:  ldarg.0
+  IL_002f:  ldfld      class TestingShits.WindowsFormsApplication.IInvocationHandler TestingShits.WindowsFormsApplication.Proxy::'handler'
+  IL_0034:  ldloc.0
+  IL_0035:  callvirt   instance object TestingShits.WindowsFormsApplication.IInvocationHandler::OnCall(class TestingShits.WindowsFormsApplication.CallInfo)
+  IL_003a:  unbox.any  [mscorlib]System.Int32
+  IL_003f:  stloc.1
+  IL_0040:  br.s       IL_0042
+  IL_0042:  ldloc.1
+  IL_0043:  ret
+} // end of method Proxy::DoIt
+
