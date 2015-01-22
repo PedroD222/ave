@@ -21,7 +21,7 @@ namespace DynamicProxy
             AssemblyName asn = new AssemblyName("ProxyBuilderAssembly");
             AssemblyBuilder ab = AppDomain.CurrentDomain.DefineDynamicAssembly(asn, AssemblyBuilderAccess.RunAndSave); //Pode dar problemas
             
-            ModuleBuilder mb = ab.DefineDynamicModule("ProxyBuilderModule");
+            ModuleBuilder mb = ab.DefineDynamicModule(asn.Name, asn.Name + ".dll");
             
             TypeBuilder tb = mb.DefineType(oBase.GetType().ToString()+"Proxy", TypeAttributes.Public, oBase.GetType());
 
@@ -96,7 +96,7 @@ namespace DynamicProxy
 
             
             Type finishedType = tb.CreateType();
-
+            ab.Save(asn.Name + ".dll");
             ConstructorInfo typeConstructor = finishedType.GetConstructor(constructorParameters);
             Object[] constructorArguments = {oBase, handler};
             object o = typeConstructor.Invoke(constructorArguments);
