@@ -129,7 +129,7 @@ namespace DynamicProxy
             ModuleBuilder mb = ab.DefineDynamicModule(asn.Name, asn.Name + ".dll");
 
             TypeBuilder tb = mb.DefineType(typeof(T).ToString() + "Proxy", TypeAttributes.Public, typeof(object));
-
+            tb.AddInterfaceImplementation(typeof(T));
             //FieldBuilder fReal = tb.DefineField("real", oBase.GetType(), FieldAttributes.Private);
             FieldBuilder fHandler = tb.DefineField("handler", mockInterceptor.GetType(), FieldAttributes.Private);
 
@@ -219,7 +219,7 @@ namespace DynamicProxy
                 methodBuilderIL.Emit(OpCodes.Ret);
                 
                 //define override
-                //tb.DefineMethodOverride(methodBuilder, mInfo);
+                tb.DefineMethodOverride(methodBuilder, mInfo);
                 
             }
 

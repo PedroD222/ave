@@ -8,7 +8,7 @@ using System.Diagnostics;
 namespace DynamicProxy
 {
    
-    public interface IInvocationHandler
+    interface IInvocationHandler
     {
         object OnCall(CallInfo info);
     }
@@ -29,7 +29,8 @@ namespace DynamicProxy
 
     }
 
-    class MockInterceptor : IInvocationHandler
+    //sem public n funciona
+    public class MockInterceptor : IInvocationHandler
     {
         public object OnCall(CallInfo info)
         {

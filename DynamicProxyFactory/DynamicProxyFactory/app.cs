@@ -3,6 +3,12 @@ using System.Collections.Generic;
 
 namespace DynamicProxy
 {
+    //sem public n funciona
+    public interface IHelper
+    {
+        string Operation(IDictionary<int, string> param);
+    }
+
     public class Program
     {
 	    public class Foo {
@@ -23,11 +29,7 @@ namespace DynamicProxy
             IInvocationHandler mockInterceptor =new MockInterceptor();
             IHelper p = (IHelper)DynamicProxyFactory.MakeProxy<IHelper>(mockInterceptor);
             string s = p.Operation(new Dictionary<int, string>());
+            Console.WriteLine(s);
         }
-    
-        interface IHelper {
-            string Operation(IDictionary<int, string> param);
-        }
-         
     }
 }
