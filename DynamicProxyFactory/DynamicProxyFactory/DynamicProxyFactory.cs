@@ -120,7 +120,6 @@ namespace DynamicProxy
             return o as T;
         }
 
-        //TODO
         public static object MakeProxy<T>(IInvocationHandler mockInterceptor) where T : class
         {
             AssemblyName asn = new AssemblyName("ProxyBuilderAssemblyInterface");
@@ -129,8 +128,9 @@ namespace DynamicProxy
             ModuleBuilder mb = ab.DefineDynamicModule(asn.Name, asn.Name + ".dll");
 
             TypeBuilder tb = mb.DefineType(typeof(T).ToString() + "Proxy", TypeAttributes.Public, typeof(object));
+            
+            //implement interface
             tb.AddInterfaceImplementation(typeof(T));
-            //FieldBuilder fReal = tb.DefineField("real", oBase.GetType(), FieldAttributes.Private);
             FieldBuilder fHandler = tb.DefineField("handler", mockInterceptor.GetType(), FieldAttributes.Private);
 
             Type[] constructorParameters = { typeof(IInvocationHandler) };
@@ -139,14 +139,10 @@ namespace DynamicProxy
             ILGenerator cbIL = cb.GetILGenerator();
             cbIL.Emit(OpCodes.Ldarg_0);
             cbIL.Emit(OpCodes.Call, typeof (object).GetConstructor(Type.EmptyTypes));
-            //cbIL.Emit(OpCodes.Ldarg_0);
-            //cbIL.Emit(OpCodes.Ldarg_1);
-            //cbIL.Emit(OpCodes.Stfld, fReal);
             cbIL.Emit(OpCodes.Ldarg_0);
             cbIL.Emit(OpCodes.Ldarg_1);
             cbIL.Emit(OpCodes.Stfld, fHandler);
             cbIL.Emit(OpCodes.Ret);
-
 
             Type[] singleStringType = { typeof(String) };
             MethodInfo getMethod = typeof(Type).GetMethod("GetMethod", singleStringType);
@@ -154,7 +150,6 @@ namespace DynamicProxy
             
             foreach (MethodInfo mInfo in typeof(T).GetMethods())
             {
-                
                 //generate method
                 ParameterInfo[] mparams = mInfo.GetParameters();
                 Type[] ParametersTypes = new Type[mparams.Length];
@@ -166,37 +161,30 @@ namespace DynamicProxy
                 MethodBuilder methodBuilder = tb.DefineMethod(mInfo.Name, mInfo.Attributes & ~abs, mInfo.CallingConvention, mInfo.ReturnType, ParametersTypes);
                
                 //build CallInfo
-
                 ILGenerator methodBuilderIL = methodBuilder.GetILGenerator();
 
                 //create local 2
                 LocalBuilder l0 = methodBuilderIL.DeclareLocal(typeof(CallInfo));
-                //LocalBuilder l1 = methodBuilderIL.DeclareLocal(typeof(int));
-                LocalBuilder l2 = methodBuilderIL.DeclareLocal(typeof(object[]));
+                LocalBuilder l1 = methodBuilderIL.DeclareLocal(typeof(object[]));
 
                 methodBuilderIL.Emit(OpCodes.Ldarg_0);
-                //methodBuilderIL.Emit(OpCodes.Ldfld, fReal);
                 methodBuilderIL.Emit(OpCodes.Call, getType);
                 methodBuilderIL.Emit(OpCodes.Ldstr, mInfo.Name);
                 methodBuilderIL.Emit(OpCodes.Call, getMethod);
-                //       methodBuilderIL.Emit(OpCodes.Mkrefany, mInfo.GetType());
-
-                methodBuilderIL.Emit(OpCodes.Ldarg_0);
-                //methodBuilderIL.Emit(OpCodes.Ldfld, fReal);
-
+                methodBuilderIL.Emit(OpCodes.Ldarg_0);               
                 methodBuilderIL.Emit(OpCodes.Ldc_I4, mparams.Length);
                 methodBuilderIL.Emit(OpCodes.Newarr, typeof(object));
                 methodBuilderIL.Emit(OpCodes.Stloc_1);
                 methodBuilderIL.Emit(OpCodes.Ldloc_1);
-                //methodBuilderIL.Emit(OpCodes.Dup);
+                
                 for (int i = 0; i < mparams.Length; ++i)
                 {
-                    //  methodBuilderIL.Emit(OpCodes.Dup);
                     methodBuilderIL.Emit(OpCodes.Ldc_I4, i);
                     methodBuilderIL.Emit(OpCodes.Ldarg, i + 1);
                     methodBuilderIL.Emit(OpCodes.Stelem_Ref);
                 }
                 methodBuilderIL.Emit(OpCodes.Ldloc_1);
+
                 //debug
                 // methodBuilderIL.Emit(OpCodes.Ldnull);
                 //methodBuilderIL.Emit(OpCodes.Ldnull);
@@ -208,21 +196,20 @@ namespace DynamicProxy
                 //handler Proxy
                 methodBuilderIL.Emit(OpCodes.Ldarg_0);
                 methodBuilderIL.Emit(OpCodes.Ldfld, fHandler);
-                //carregare callinfo
+                
+                //carregar callinfo
                 methodBuilderIL.Emit(OpCodes.Ldloc_0);
+
                 //call handler.OnCall(CallInfo)                
                 methodBuilderIL.Emit(OpCodes.Callvirt, mockInterceptor.GetType().GetMethod("OnCall"));
                 if (mInfo.ReturnType.IsValueType && mInfo.ReturnType != typeof(void))
                     methodBuilderIL.Emit(OpCodes.Unbox_Any, mInfo.ReturnType);
-                // methodBuilderIL.Emit(OpCodes.Unbox_Any, mInfo.ReturnType);
 
                 methodBuilderIL.Emit(OpCodes.Ret);
                 
                 //define override
                 tb.DefineMethodOverride(methodBuilder, mInfo);
-                
             }
-
 
             Type finishedType = tb.CreateType();
             ab.Save(asn.Name + ".dll");
