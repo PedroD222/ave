@@ -5,15 +5,18 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
+using DynamicProxyManager;
 
-
-namespace DynamicProxy
+namespace DynamicProxyManager
 {
 
-    class DynamicProxyFactory
+    class DynamicProxyFactory<T>
     {
 
-        public static object MakeProxy<T>(T oBase, IInvocationHandler handler) where T : class {
+        private static object oBase;
+        private static Delegate baseMethod;
+
+        public static T MakeProxy<T>(T oBase, IInvocationHandler handler) where T : class {
             AssemblyName asn = new AssemblyName("ProxyBuilderAssembly");
             AssemblyBuilder ab = AppDomain.CurrentDomain.DefineDynamicAssembly(asn, AssemblyBuilderAccess.RunAndSave); //Pode dar problemas
             
@@ -120,7 +123,7 @@ namespace DynamicProxy
             return o as T;
         }
 
-        public static object MakeProxy<T>(IInvocationHandler mockInterceptor) where T : class
+        public static T MakeProxy<T>(IInvocationHandler mockInterceptor) where T : class
         {
             AssemblyName asn = new AssemblyName("ProxyBuilderAssemblyInterface");
             AssemblyBuilder ab = AppDomain.CurrentDomain.DefineDynamicAssembly(asn, AssemblyBuilderAccess.RunAndSave); //Pode dar problemas
@@ -218,6 +221,19 @@ namespace DynamicProxy
             object o = typeConstructor.Invoke(constructorArguments);
             return o as T;
         }
+
+        public static object With<T>(object obase) where T : class
+        {
+            oBase = obase;
+            return obase;
+        }
+
+        public static T On<T1, T2>( Delegate d)
+        {
+            baseMethod = d;
+            return src;
+        }
+
     }
 }
 
