@@ -13,7 +13,7 @@ namespace DynamicProxy
     class DynamicProxyFactory
     {
 
-        public static object MakeProxy<T>(T oBase, IInvocationHandler handler) where T : class {
+        public static T MakeProxy<T>(T oBase, IInvocationHandler handler) where T : class {
             AssemblyName asn = new AssemblyName("ProxyBuilderAssembly");
             AssemblyBuilder ab = AppDomain.CurrentDomain.DefineDynamicAssembly(asn, AssemblyBuilderAccess.RunAndSave); //Pode dar problemas
             
@@ -120,7 +120,7 @@ namespace DynamicProxy
             return o as T;
         }
 
-        public static object MakeProxy<T>(IInvocationHandler mockInterceptor) where T : class
+        public static T MakeProxy<T>(IInvocationHandler mockInterceptor) where T : class
         {
             AssemblyName asn = new AssemblyName("ProxyBuilderAssemblyInterface");
             AssemblyBuilder ab = AppDomain.CurrentDomain.DefineDynamicAssembly(asn, AssemblyBuilderAccess.RunAndSave); //Pode dar problemas
@@ -210,7 +210,7 @@ namespace DynamicProxy
                 //define override
                 tb.DefineMethodOverride(methodBuilder, mInfo);
             }
-
+            
             Type finishedType = tb.CreateType();
             ab.Save(asn.Name + ".dll");
             ConstructorInfo typeConstructor = finishedType.GetConstructor(constructorParameters);
