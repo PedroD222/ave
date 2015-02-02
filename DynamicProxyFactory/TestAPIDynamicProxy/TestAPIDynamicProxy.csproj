@@ -48,9 +48,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DynamicProxyManager\DynamicProxyManager.csproj">
+    <ProjectReference Include="..\DynamicProxyManager\DynamicProxyAPI.csproj">
       <Project>{059c791f-8899-4fcf-838f-854a9c30aa98}</Project>
-      <Name>DynamicProxyManager</Name>
+      <Name>DynamicProxyAPI</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

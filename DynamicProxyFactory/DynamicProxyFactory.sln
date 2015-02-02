@@ -5,7 +5,7 @@ VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DynamicProxy", "DynamicProxyFactory\DynamicProxy.csproj", "{F87F59D1-8379-4AEB-82F1-A8BE5DE72D32}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DynamicProxyManager", "DynamicProxyManager\DynamicProxyManager.csproj", "{059C791F-8899-4FCF-838F-854A9C30AA98}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DynamicProxyAPI", "DynamicProxyManager\DynamicProxyAPI.csproj", "{059C791F-8899-4FCF-838F-854A9C30AA98}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAPIDynamicProxy", "TestAPIDynamicProxy\TestAPIDynamicProxy.csproj", "{A93F92DA-E940-4BF8-B0CF-17EAAF70A906}"
 	ProjectSection(ProjectDependencies) = postProject
