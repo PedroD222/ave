@@ -7,6 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DynamicProxy", "DynamicProx
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DynamicProxyManager", "DynamicProxyManager\DynamicProxyManager.csproj", "{059C791F-8899-4FCF-838F-854A9C30AA98}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAPIDynamicProxy", "TestAPIDynamicProxy\TestAPIDynamicProxy.csproj", "{A93F92DA-E940-4BF8-B0CF-17EAAF70A906}"
+	ProjectSection(ProjectDependencies) = postProject
+		{059C791F-8899-4FCF-838F-854A9C30AA98} = {059C791F-8899-4FCF-838F-854A9C30AA98}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +26,10 @@ Global
 		{059C791F-8899-4FCF-838F-854A9C30AA98}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{059C791F-8899-4FCF-838F-854A9C30AA98}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{059C791F-8899-4FCF-838F-854A9C30AA98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A93F92DA-E940-4BF8-B0CF-17EAAF70A906}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A93F92DA-E940-4BF8-B0CF-17EAAF70A906}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A93F92DA-E940-4BF8-B0CF-17EAAF70A906}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A93F92DA-E940-4BF8-B0CF-17EAAF70A906}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
