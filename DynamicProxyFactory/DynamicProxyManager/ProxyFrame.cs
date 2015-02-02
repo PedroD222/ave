@@ -7,16 +7,34 @@ using System.Reflection;
 
 namespace DynamicProxyManager
 {
+
+    public class ParameterNameComparer : EqualityComparer<ParameterInfo>
+    {
+
+        public override bool Equals(ParameterInfo x, ParameterInfo y)
+        {
+            return x.ParameterType.Equals(y.ParameterType);
+        }
+
+        public override int GetHashCode(ParameterInfo obj)
+        {
+            return obj.GetHashCode();
+        }
+
+        public static ParameterNameComparer comparer = new ParameterNameComparer();
+    }
+
     public interface IProxyMethodInfoBase
     {
         Delegate GetBefore();
         Delegate GetAfter();
         Delegate GetReplace();
         MethodInfo GetMethod();
-        void DoBefore<T>(Delegate a);
-        void DoAfter<T>(Delegate a);
-        void Replace<Ti, To>(Delegate f);
+        void DoBefore(Delegate a);
+        void DoAfter(Delegate a);
+        void Replace(Delegate f);
     }    
+
     public class ProxyMethodInfo<T0, T1> : IProxyMethodInfoBase
     {
         private MethodInfo method;
@@ -24,32 +42,31 @@ namespace DynamicProxyManager
         private Delegate before;
         private Delegate replace;
         private Delegate after;
+        
 
         public ProxyMethodInfo(Func<T0, T1> method)
         {
             this.method = method.Method;
         }
 
-        public void DoBefore<T>(Delegate method) where T:T0
+        public void DoBefore(Delegate del)
         {
-            before = Delegate.Combine( before, method);
+            if(del.GetMethodInfo().GetParameters().SequenceEqual(method.GetParameters(), ParameterNameComparer.comparer))
+                before = Delegate.Combine( before, del);
         }
 
-        public void DoAfter<T>(Delegate method) where T:T0
+        public void DoAfter(Delegate del)
         {
-            after = Delegate.Combine(after, method);
+            if (del.GetMethodInfo().GetParameters().SequenceEqual(method.GetParameters(), ParameterNameComparer.comparer))
+                after = Delegate.Combine(after, del);
         }
 
-        public void Replace<Ti, To>(Delegate method) where Ti:T0 where To:T1
+        public void Replace(Delegate del)
         {
-            replace = method;
+            if (del.GetMethodInfo().GetParameters().SequenceEqual(method.GetParameters(), ParameterNameComparer.comparer))
+                replace = del;
         }
-
-        public String GetMethodName()
-        {
-            return method.Name;
-        }
-
+        
         public Delegate GetBefore()
         {
             return before;
@@ -145,19 +162,32 @@ namespace DynamicProxyManager
 
         public ProxyFrame<T> DoBefore<T0>(Action<T0> method)
         {
-            onList.Last().DoBefore<T0>(method);
+            onList.Last().DoBefore(method);
             return this;
         }
 
+        public ProxyFrame<T> DoBefore<T0, T1>(Action<T0, T1> method)
+        {
+            onList.Last().DoBefore(method);
+            return this;
+        }
+
+        public ProxyFrame<T> DoBefore<T0, T1, T2>(Action<T0, T1, T2> method)
+        {
+            onList.Last().DoBefore(method);
+            return this;
+        }
+
+
         public ProxyFrame<T> DoAfter<T0>(Action<T0> method)
         {
-            onList.Last().DoAfter<T0>(method);
+            onList.Last().DoAfter(method);
             return this;
         }
 
         public ProxyFrame<T> Replace<T0, T1>(Func<T0, T1> method)
         {
-            onList.Last().Replace<T0, T1>(method);
+            onList.Last().Replace(method);
             return this;
         }
 
