@@ -23,20 +23,23 @@ namespace DynamicProxyManager
         {
             IInvocationHandler logInterceptor = new LoggerInterceptor();
             Foo real = new Foo();
-            Foo proxy = DynamicProxyFactory<Foo>.MakeProxy<Foo>(real, logInterceptor);
-            proxy = DynamicProxyFactory<Foo>
-                .With<Foo>(proxy)
+            Foo proxy = DynamicProxyFactory.MakeProxy<Foo>(real, logInterceptor);
+            proxy = DynamicProxyFactory
+                .With<Foo>(real)
                 .On<String, int>(proxy.DoIt)
-                .DoBefore<String>(v => Console.WriteLine("DoItMoreSpecial() with {0}", v))
-                .Replace<String, int>(v => v.GetHashCode())
+                .DoAfter<String>(v => Console.WriteLine("AFTER1 {0}", v))
+                .DoBefore<String>(v => Console.WriteLine("BEFORE1 with {0}", v))                
+                .DoAfter<String>(v => Console.WriteLine("AFTER2 {0}", v))
+                .DoBefore<String>(v => Console.WriteLine("BEFORE2 with {0}", v))                
                 .Make();
-            int n = proxy.DoIt("12");
+            int n = proxy.DoIt("cenas");
             Console.WriteLine("Proxy.Doit : "+ n );
             
             IInvocationHandler mockInterceptor =new MockInterceptor();
             IHelper p = (IHelper)DynamicProxyFactory.MakeProxy<IHelper>(mockInterceptor);
             string s = p.Operation(new Dictionary<int, string>());
             Console.WriteLine(s);
+            Console.ReadKey();
         }
     }
 }

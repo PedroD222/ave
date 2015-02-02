@@ -31,6 +31,7 @@ namespace DynamicProxy
             IHelper p = (IHelper)DynamicProxyFactory.MakeProxy<IHelper>(mockInterceptor);
             string s = p.Operation(new Dictionary<int, string>());
             Console.WriteLine(s);
+            Console.ReadKey();
         }
     }
 }

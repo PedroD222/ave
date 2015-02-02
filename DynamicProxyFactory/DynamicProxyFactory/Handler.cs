@@ -8,11 +8,7 @@ using System.Diagnostics;
 namespace DynamicProxy
 {
    
-    interface IInvocationHandler
-    {
-        object OnCall(CallInfo info);
-    }
-
+    
     public class LoggerInterceptor : IInvocationHandler
     {
 

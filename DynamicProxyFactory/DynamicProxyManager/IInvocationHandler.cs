@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DynamicProxyFactory
+namespace DynamicProxyManager
 {
-   
     public interface IInvocationHandler
     {
         object OnCall(CallInfo info);
     }
+
 }

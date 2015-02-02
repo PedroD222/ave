@@ -4,14 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Reflection;
 
-namespace DynamicProxyManager
-{
-   
-    interface IInvocationHandler
-    {
-        object OnCall(CallInfo info);
-    }
+namespace DynamicProxyManager{
+
+    
 
     public class LoggerInterceptor : IInvocationHandler
     {
