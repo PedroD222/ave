@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using DynamicProxyManager;
 
 namespace TestAPIDynamicProxy
 {
+    
     public class Program
     {
         public class Foo
@@ -51,6 +52,7 @@ namespace TestAPIDynamicProxy
                 return "AClass.DoIt()";
             }
         }
+        
         public static void Main(string[] args)
         {
             String s1 = "AVE", s2 = "SI", s3 = "14/15";
