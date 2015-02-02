@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
-using DynamicProxy;
+
 
 namespace DynamicProxy
 {
@@ -225,11 +225,14 @@ namespace DynamicProxy
 *class Proxy : Foo
 {
     IInvocationHandler handler;
-    public Proxy (IInvocationHandler handler){
+    Foo real;
+ 
+    public Proxy (IInvocationHandler handler, Foo real){
         this.handler = handler;
+        this.real = real;
     }
     public int DoIt(String s){
-        CallInfo ci = new CallInfo(typeof(Foo).GetMethod("DoIt"), this, new object[]{s});
+        CallInfo ci = new CallInfo(typeof(real).GetMethod("DoIt"), real, new object[]{s});
         return (int)handler.OnCall(ci);
     }
 }

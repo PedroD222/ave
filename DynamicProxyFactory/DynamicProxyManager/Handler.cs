@@ -21,7 +21,6 @@ namespace DynamicProxyManager
         public object OnCall(CallInfo info)
         {
             start = watch.ElapsedTicks;
-
             // call real method using reflection
             object res = info.TargetMethod.Invoke(info.Target, info.Parameters);
             Console.WriteLine("Executed in {0} ticks", watch.ElapsedTicks - start);

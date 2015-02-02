@@ -116,6 +116,7 @@ namespace DynamicProxyManager
             ConstructorInfo typeConstructor = finishedType.GetConstructor(constructorParameters);
             Object[] constructorArguments = {oBase, handler};
             object o = typeConstructor.Invoke(constructorArguments);
+            return o as T;
             return (T)o;
         }
 
@@ -209,7 +210,7 @@ namespace DynamicProxyManager
                 //define override
                 tb.DefineMethodOverride(methodBuilder, mInfo);
             }
-            
+
             Type finishedType = tb.CreateType();
             ab.Save(asn.Name + ".dll");
             ConstructorInfo typeConstructor = finishedType.GetConstructor(constructorParameters);
@@ -224,11 +225,14 @@ namespace DynamicProxyManager
 *class Proxy : Foo
 {
     IInvocationHandler handler;
-    public Proxy (IInvocationHandler handler){
+    Foo real;
+ 
+    public Proxy (IInvocationHandler handler, Foo real){
         this.handler = handler;
+        this.real = real;
     }
     public int DoIt(String s){
-        CallInfo ci = new CallInfo(typeof(Foo).GetMethod("DoIt"), this, new object[]{s});
+        CallInfo ci = new CallInfo(typeof(real).GetMethod("DoIt"), real, new object[]{s});
         return (int)handler.OnCall(ci);
     }
 }
