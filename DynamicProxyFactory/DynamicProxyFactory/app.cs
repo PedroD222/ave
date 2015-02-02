@@ -23,12 +23,12 @@ namespace DynamicProxy
         {
             IInvocationHandler logInterceptor = new LoggerInterceptor();
             Foo real = new Foo();
-            Foo proxy = (Foo) DynamicProxyFactory.MakeProxy<Foo>(real, logInterceptor);
+            Foo proxy = DynamicProxyFactory.MakeProxy<Foo>(real, logInterceptor);
             int n = proxy.DoIt("12");
             Console.WriteLine("Proxy.Doit : "+ n );
             
             IInvocationHandler mockInterceptor =new MockInterceptor();
-            IHelper p = (IHelper)DynamicProxyFactory.MakeProxy<IHelper>(mockInterceptor);
+            IHelper p = DynamicProxyFactory.MakeProxy<IHelper>(mockInterceptor);
             string s = p.Operation(new Dictionary<int, string>());
             Console.WriteLine(s);
             Console.ReadKey();

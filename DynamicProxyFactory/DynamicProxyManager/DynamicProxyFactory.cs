@@ -13,6 +13,7 @@ namespace DynamicProxyManager
     class DynamicProxyFactory
     {
 
+
         public static T MakeProxy<T>(T oBase, IInvocationHandler handler) where T : class {
             Boolean isInterface = oBase == null;
             AssemblyName asn = new AssemblyName("ProxyBuilderAssembly");
@@ -139,6 +140,7 @@ namespace DynamicProxyManager
             ConstructorInfo typeConstructor = finishedType.GetConstructor(constructorParameters);
             object o = typeConstructor.Invoke(constructorArguments);
             return o as T;
+            return (T)o;
         }
 
         public static T MakeProxy<T>(IInvocationHandler handler) where T : class
@@ -242,15 +244,12 @@ namespace DynamicProxyManager
             Object[] constructorArguments = { handler };
             object o = typeConstructor.Invoke(constructorArguments);
             return o as T;
-              */
-
             public static ProxyFrame<T> With<T>(T oBase) where T:class{
                 return new ProxyFrame<T>(oBase);
             }
         }
+}
     
-    }
-/*
 *class Proxy : Foo
 {
     IInvocationHandler handler;

@@ -15,6 +15,7 @@ namespace DynamicProxy
 
         public static T MakeProxy<T>(T oBase, IInvocationHandler handler) where T : class {
             Boolean isInterface = oBase == null;
+
             AssemblyName asn = new AssemblyName("ProxyBuilderAssembly");
             AssemblyBuilder ab = AppDomain.CurrentDomain.DefineDynamicAssembly(asn, AssemblyBuilderAccess.RunAndSave); //Pode dar problemas
             
@@ -234,7 +235,7 @@ namespace DynamicProxy
                 //define override
                 tb.DefineMethodOverride(methodBuilder, mInfo);
             }
-
+            
             Type finishedType = tb.CreateType();
             ab.Save(asn.Name + ".dll");
             ConstructorInfo typeConstructor = finishedType.GetConstructor(constructorParameters);
