@@ -6,36 +6,68 @@ using System.Reflection;
 
 namespace DynamicProxyManager
 {
-    public class ProxyMethodInfo
+    public interface IProxyMethodInfoBase
     {
-        public MethodInfo Method { get; set; }
-        public Delegate Before { get; set; }
-        public Delegate After { get; set; }
-        public Delegate ToReplace { get; set; }
+        Delegate GetBefore();
+        Delegate GetAfter();
+        Delegate GetReplace();
+        MethodInfo GetMethod();
+        void DoBefore(Delegate a);
+        void DoAfter(Delegate a);
+        void Replace(Delegate f);
+    }
+
+    public class ProxyMethodInfo : IProxyMethodInfoBase
+    {
+        private MethodInfo method;
+
+        private Delegate before;
+        private Delegate replace;
+        private Delegate after;
 
 
         public ProxyMethodInfo(Delegate method)
         {
-            Method = method.Method;
+            this.method = method.Method;
         }
 
         public void DoBefore(Delegate del)
         {
-            if (del.GetMethodInfo().GetParameters().SequenceEqual(Method.GetParameters(), ParameterNameComparer.comparer))
-                Before = Delegate.Combine(Before, del);
+            if (del.GetMethodInfo().GetParameters().SequenceEqual(method.GetParameters(), ParameterNameComparer.comparer))
+                before = Delegate.Combine(before, del);
         }
 
         public void DoAfter(Delegate del)
         {
-            if (del.GetMethodInfo().GetParameters().SequenceEqual(Method.GetParameters(), ParameterNameComparer.comparer))
-                After = Delegate.Combine(After, del);
+            if (del.GetMethodInfo().GetParameters().SequenceEqual(method.GetParameters(), ParameterNameComparer.comparer))
+                after = Delegate.Combine(after, del);
         }
 
         public void Replace(Delegate del)
         {
-            if (del.GetMethodInfo().GetParameters().SequenceEqual(Method.GetParameters(), ParameterNameComparer.comparer))
-                ToReplace = del;
+            if (del.GetMethodInfo().GetParameters().SequenceEqual(method.GetParameters(), ParameterNameComparer.comparer))
+                replace = del;
         }
 
+        public Delegate GetBefore()
+        {
+            return before;
+        }
+
+        public Delegate GetAfter()
+        {
+            return after;
+        }
+
+        public Delegate GetReplace()
+        {
+            return replace;
+        }
+
+        public MethodInfo GetMethod()
+        {
+            return method;
+        }
     }
+
 }

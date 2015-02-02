@@ -58,22 +58,11 @@ namespace DynamicProxyManager
                 .DoAfter<String>(v => Console.WriteLine("AFTER1 {0}", v))
                 .DoBefore<String>(v => Console.WriteLine("BEFORE1 with {0}", v))                
                 .DoAfter<String>(v => Console.WriteLine("AFTER2 {0}", v))
-                .On<String>(real.ToString)
-                .DoBefore(() => Console.WriteLine("BEFORE2 ON real.toString"))                
+                .DoBefore<String>(v => Console.WriteLine("BEFORE2 with {0}", v))                
                 .Make();
             int n = real.DoIt("cenas");
-            Console.WriteLine("Proxy.Doit : "+ real.ToString() );
+            Console.WriteLine("Proxy.Doit : "+ n );
 
-            real = new Foo();
-            real = DynamicProxyFactory
-                .With<Foo>(real)
-                .On<String, int>(real.DoIt)
-                .DoAfter<String>(v => Console.WriteLine("Cenas" + v))
-                .On<String>(real.ToString)
-                .DoBefore(() => Console.WriteLine("BEFORE real.toString"))
-                .Make();
-            real.DoIt("124");
-            real.ToString();
             FooWithDoitVoidRet proxy = new FooWithDoitVoidRet();
             proxy = DynamicProxyFactory.With<FooWithDoitVoidRet>(proxy).On<String>(proxy.DoIt).Make();
             Console.WriteLine(proxy.DoIt());
