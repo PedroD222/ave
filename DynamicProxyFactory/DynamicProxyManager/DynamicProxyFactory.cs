@@ -105,10 +105,15 @@ namespace DynamicProxyManager
                 {
                     methodBuilderIL.Emit(OpCodes.Ldfld, fReal);
                 }
-                methodBuilderIL.Emit(OpCodes.Ldc_I4, mparams.Length);
-                methodBuilderIL.Emit(OpCodes.Newarr, typeof(object));
-                methodBuilderIL.Emit(OpCodes.Stloc_1);
-                methodBuilderIL.Emit(OpCodes.Ldloc_1);
+                if (mparams.Length == 0)
+                    methodBuilderIL.Emit(OpCodes.Ldnull);
+                else
+                {
+                    methodBuilderIL.Emit(OpCodes.Ldc_I4, mparams.Length);
+                    methodBuilderIL.Emit(OpCodes.Newarr, typeof(object));
+                    methodBuilderIL.Emit(OpCodes.Stloc_1);
+                    methodBuilderIL.Emit(OpCodes.Ldloc_1);
+                }
                 for (int i = 0; i < mparams.Length; ++i)
                 {
                     methodBuilderIL.Emit(OpCodes.Dup);
