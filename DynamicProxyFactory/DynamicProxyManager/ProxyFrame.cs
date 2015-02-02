@@ -35,12 +35,14 @@ namespace DynamicProxyManager
     
         public object OnCall(CallInfo info)
         {
+            object retVal;
+
             ProxyMethodInfo method = onlist.FirstOrDefault(m => m.Method.Name == info.TargetMethod.Name);
             if (method == null)
                 return info.TargetMethod.Invoke(info.Target, info.Parameters);
             if(method.Before != null)
                 method.Before.DynamicInvoke(info.Parameters);
-            object retVal;
+            
             if (method.ToReplace == null)
                 retVal = info.TargetMethod.Invoke(info.Target, info.Parameters);
             else
@@ -65,6 +67,7 @@ namespace DynamicProxyManager
             onList = new List<ProxyMethodInfo>();
         }
 
+        #region On
         public ProxyFrame<T> On(Action method)
         {
             ProxyMethodInfo pmi = new ProxyMethodInfo(method);
@@ -128,7 +131,9 @@ namespace DynamicProxyManager
             onList.Add(pmi);
             return this;
         }
+        #endregion
 
+        #region DoBefore
         public ProxyFrame<T> DoBefore(Action method)
         {
             currentOn.DoBefore(method);
@@ -152,7 +157,9 @@ namespace DynamicProxyManager
             currentOn.DoBefore(method);
             return this;
         }
+#endregion
 
+        #region DoAfter
         public ProxyFrame<T> DoAfter(Action method)
         {
             currentOn.DoAfter(method);
@@ -176,7 +183,9 @@ namespace DynamicProxyManager
             currentOn.DoAfter(method);
             return this;
         }
+        #endregion
 
+        #region Replace
         public ProxyFrame<T> Replace(Action method)
         {
             currentOn.Replace(method);
@@ -225,6 +234,7 @@ namespace DynamicProxyManager
             currentOn.Replace(method);
             return this;
         }
+        #endregion
 
         public T Make(){
             ProxyHandler<T> handler = new ProxyHandler<T>(onList);
