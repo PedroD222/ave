@@ -71,28 +71,49 @@ namespace DynamicProxyManager
 
         public ProxyFrame<T> On<T0>(Func<T0> method)
         {
-            ProxyMethodInfo<T0> pmi = new ProxyMethodInfo<T0>(method);
+            ProxyMethodInfo pmi = new ProxyMethodInfo(method);
+            onList.Add(pmi);
+            return this;
+        }
+
+        public ProxyFrame<T> On<T0>(Action<T0> method)
+        {
+            ProxyMethodInfo pmi = new ProxyMethodInfo(method);
             onList.Add(pmi);
             return this;
         }
 
         public ProxyFrame<T> On<T0, T1>(Func<T0, T1> method)
         {
-            ProxyMethodInfo<T0, T1> pmi = new ProxyMethodInfo<T0,T1>(method);
+            ProxyMethodInfo pmi = new ProxyMethodInfo(method);
+            onList.Add(pmi);
+            return this;
+        }
+
+        public ProxyFrame<T> On<T0, T1>(Action<T0, T1> method)
+        {
+            ProxyMethodInfo pmi = new ProxyMethodInfo(method);
             onList.Add(pmi);
             return this;
         }
 
         public ProxyFrame<T> On<T0, T1, T2>(Func<T0, T1, T2> method)
         {
-            ProxyMethodInfo<T0, T1, T2> pmi = new ProxyMethodInfo<T0, T1, T2>(method);
+            ProxyMethodInfo pmi = new ProxyMethodInfo(method);
+            onList.Add(pmi);
+            return this;
+        }
+
+        public ProxyFrame<T> On<T0, T1, T2>(Action<T0, T1, T2> method)
+        {
+            ProxyMethodInfo pmi = new ProxyMethodInfo(method);
             onList.Add(pmi);
             return this;
         }
 
         public ProxyFrame<T> On<T0, T1, T2, T3>(Func<T0, T1, T2, T3> method)
         {
-            ProxyMethodInfo<T0, T1, T2, T3> pmi = new ProxyMethodInfo<T0, T1, T2, T3>(method);
+            ProxyMethodInfo pmi = new ProxyMethodInfo(method);
             onList.Add(pmi);
             return this;
         }
@@ -121,6 +142,11 @@ namespace DynamicProxyManager
             return this;
         }
 
+        public ProxyFrame<T> DoAfter(Action method)
+        {
+            onList.Last().DoAfter(method);
+            return this;
+        }
 
         public ProxyFrame<T> DoAfter<T0>(Action<T0> method)
         {
@@ -128,7 +154,62 @@ namespace DynamicProxyManager
             return this;
         }
 
+        public ProxyFrame<T> DoAfter<T0, T1>(Action<T0, T1> method)
+        {
+            onList.Last().DoAfter(method);
+            return this;
+        }
+
+        public ProxyFrame<T> DoAfter<T0, T1, T2>(Action<T0, T1, T2> method)
+        {
+            onList.Last().DoAfter(method);
+            return this;
+        }
+
+        public ProxyFrame<T> Replace(Action method)
+        {
+            onList.Last().Replace(method);
+            return this;
+        }
+
+        public ProxyFrame<T> Replace<T0>(Func<T0> method){
+            onList.Last().Replace(method);
+            return this;
+        }
+
+        public ProxyFrame<T> Replace<T0>(Action<T0> method)
+        {
+            onList.Last().Replace(method);
+            return this;
+        }
+
+        public ProxyFrame<T> Replace<T0, T1>(Action<T0, T1> method)
+        {
+            onList.Last().Replace(method);
+            return this;
+        }
+
+
         public ProxyFrame<T> Replace<T0, T1>(Func<T0, T1> method)
+        {
+            onList.Last().Replace(method);
+            return this;
+        }
+    
+        public ProxyFrame<T> Replace<T0, T1, T2>(Action<T0, T1, T2> method)
+        {
+            onList.Last().Replace(method);
+            return this;
+        }
+
+        public ProxyFrame<T> Replace<T0, T1, T2>(Func<T0, T1, T2> method)
+        {
+            onList.Last().Replace(method);
+            return this;
+        }
+
+        
+        public ProxyFrame<T> Replace<T0, T1, T2, T3>(Func<T0, T1, T2, T3> method)
         {
             onList.Last().Replace(method);
             return this;
