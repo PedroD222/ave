@@ -133,7 +133,9 @@ namespace DynamicProxy
                 methodBuilderIL.Emit(OpCodes.Callvirt, handler.GetType().GetMethod("OnCall"));
                 if (mInfo.ReturnType.IsValueType && mInfo.ReturnType != typeof(void))
                     methodBuilderIL.Emit(OpCodes.Unbox_Any, mInfo.ReturnType);
-                // methodBuilderIL.Emit(OpCodes.Unbox_Any, mInfo.ReturnType);
+
+                if (mInfo.ReturnType == typeof(void))
+                    methodBuilderIL.Emit(OpCodes.Pop);
 
                 methodBuilderIL.Emit(OpCodes.Ret);
 
